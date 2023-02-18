@@ -36,20 +36,15 @@ public class UserController : ControllerBase
         User newUser = new()
         {
             Id = Guid.NewGuid(),
-            IdentityCode = "null",
+            IdentityCode = user.IdentityCode,
             FirstName = user.FirstName,
             SecondName = user.SecondName,
             CalendarItem = user.CalendarItem
         };
         
-        var identityCodeGen = new Random().Next();
-        
-        newUser.IdentityCode.Replace("null", identityCodeGen.ToString());
         await repository.CreateUserAsync(newUser);
 
-        return Ok(new {
-            newUser
-        });
+        return Ok(newUser);
     }
     
     
