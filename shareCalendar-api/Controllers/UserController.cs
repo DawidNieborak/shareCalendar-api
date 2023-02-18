@@ -1,6 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.Security.Cryptography;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using shareCalendar_api.Entities;
 using shareCalendar_api.Repositories;
 
@@ -11,8 +9,7 @@ namespace shareCalendar_api.Controllers;
 public class UserController : ControllerBase
 {
     private readonly IUserRepository repository;
-
-
+    
     public UserController(IUserRepository repository)
     {
         this.repository = repository;
