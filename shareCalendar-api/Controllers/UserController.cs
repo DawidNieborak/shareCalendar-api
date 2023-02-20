@@ -9,10 +9,12 @@ namespace shareCalendar_api.Controllers;
 public class UserController : ControllerBase
 {
     private readonly IUserRepository repository;
+    private readonly ICalendarRepository calendarRepository;
 
-    public UserController(IUserRepository repository)
+    public UserController(IUserRepository repository, ICalendarRepository calendarRepository)
     {
         this.repository = repository;
+        this.calendarRepository = calendarRepository;
     }
 
     #region endpoints
@@ -21,13 +23,26 @@ public class UserController : ControllerBase
     public async Task<ActionResult<User>> GetUserByIdAsync(Guid id)
     {
         var item = await repository.GetUserAsync(id);
+
+        var calendarItems = await calendarRepository.GetAllCalendarsAsync(id);
         
         if (item is null)
         {
             return NotFound();
         }
 
-        return item;
+        User updatedUser = new()
+        {
+            Id = item.Id,
+            FirstName = item.FirstName,
+            SecondName = item.SecondName,
+            IdentityCode = item.IdentityCode,
+            CalendarItem = calendarItems
+        };
+
+        await repository.UpdateUserAsync(updatedUser);
+        
+        return updatedUser;
     }
     
     [HttpPost]
@@ -43,8 +58,6 @@ public class UserController : ControllerBase
         };
 
         await repository.CreateUserAsync(newUser);
-
-        // temp
         return Ok(newUser);
     }
     

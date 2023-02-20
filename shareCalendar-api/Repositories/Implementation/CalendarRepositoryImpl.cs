@@ -23,9 +23,10 @@ public class CalendarRepositoryImpl : ICalendarRepository
         return await _repositoryCollection.Find(filter).SingleOrDefaultAsync();
     }
 
-    public async Task<IEnumerable<CalendarItem>> GetAllCalendarsAsync(Guid id)
+    public async Task<ICollection<CalendarItem>> GetAllCalendarsAsync(Guid id)
     {
-        return await _repositoryCollection.Find(new BsonDocument()).ToListAsync();
+        var filter = filterBuilder.Eq(item => item.userId, id);
+        return await _repositoryCollection.Find(filter).ToListAsync();
     }
 
     public async Task CreateCalendarAsync(CalendarItem calendar)
