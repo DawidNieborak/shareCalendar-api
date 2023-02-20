@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using shareCalendar_api.Entities;
 using shareCalendar_api.Repositories;
 
@@ -11,7 +10,6 @@ public class CalendarController : ControllerBase
 {
     private readonly ICalendarRepository repository;
 
-
     public CalendarController(ICalendarRepository repository)
     {
         this.repository = repository;
@@ -20,7 +18,7 @@ public class CalendarController : ControllerBase
     #region endpoints
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Calendar>> GetCalendarByIdAsync(Guid id)
+    public async Task<ActionResult<CalendarItem>> GetCalendarByIdAsync(Guid id)
     {
         var item = await repository.GetCalendarAsync(id);
 
@@ -33,7 +31,7 @@ public class CalendarController : ControllerBase
     }
     
     [HttpPost]
-    public async Task<ActionResult<User>> PostCalendarAsync(CalendarItem calendarItem)
+    public async Task<ActionResult<CalendarItem>> PostCalendarAsync(CalendarItem calendarItem, Guid userId)
     {
         CalendarItem newCalendar = new()
         {
@@ -45,12 +43,42 @@ public class CalendarController : ControllerBase
             EndsAt = calendarItem.EndsAt,
             CreatedOn = DateTimeOffset.Now,
             IsShared = calendarItem.IsShared,
-            userId = calendarItem.userId
+            userId = userId
         };
 
         await repository.CreateCalendarAsync(newCalendar);
 
         return Ok(newCalendar);
     }
+
+
+    [HttpDelete]
+    public async Task<ActionResult> DeleteCalendarAsync(Guid id)
+    {
+        await repository.DeleteCalendarAsync(id);
+        return NoContent();
+    }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult> UpdateCalendarAsync(Guid id, CalendarItem updateItem)
+    {
+        var existingItem = await repository.GetCalendarAsync(id);
+
+        if (existingItem is null)
+        {
+            return NotFound();
+        }
+
+        existingItem.Type = updateItem.Type;
+        existingItem.Description = updateItem.Description;
+        existingItem.Name = updateItem.Name;
+        existingItem.IsShared = updateItem.IsShared;
+        existingItem.EndsAt = updateItem.EndsAt;
+        existingItem.StartsAt = updateItem.StartsAt;
+
+        await repository.UpdateCalendarAsync(existingItem);
+        return NoContent();
+    }
+
     #endregion
 }

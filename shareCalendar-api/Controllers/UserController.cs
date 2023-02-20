@@ -9,7 +9,7 @@ namespace shareCalendar_api.Controllers;
 public class UserController : ControllerBase
 {
     private readonly IUserRepository repository;
-    
+
     public UserController(IUserRepository repository)
     {
         this.repository = repository;
@@ -21,7 +21,7 @@ public class UserController : ControllerBase
     public async Task<ActionResult<User>> GetUserByIdAsync(Guid id)
     {
         var item = await repository.GetUserAsync(id);
-
+        
         if (item is null)
         {
             return NotFound();
@@ -31,23 +31,47 @@ public class UserController : ControllerBase
     }
     
     [HttpPost]
-    public async Task<ActionResult<User>> PostUserAsync(User user)
+    public async Task<ActionResult> PostUserAsync(UserPost userPost)
     {
         User newUser = new()
         {
             Id = Guid.NewGuid(),
-            IdentityCode = user.IdentityCode,
-            FirstName = user.FirstName,
-            SecondName = user.SecondName,
-            CalendarItem = user.CalendarItem
+            IdentityCode = userPost.IdentityCode,
+            FirstName = userPost.FirstName,
+            SecondName = userPost.SecondName,
+            CalendarItem = null
         };
-        
+
         await repository.CreateUserAsync(newUser);
 
+        // temp
         return Ok(newUser);
     }
     
+    [HttpDelete]
+    public async Task<ActionResult> DeleteUserAsync(Guid id)
+    {
+        await repository.DeleteUserAsync(id);
+        return NoContent();
+    }
     
+    [HttpPut("{id}")]
+    public async Task<ActionResult> UpdateUserAsync(Guid id, UserPost updateItem)
+    {
+        var existingItem = await repository.GetUserAsync(id);
+
+        if (existingItem is null)
+        {
+            return NotFound();
+        }
+
+        existingItem.FirstName = updateItem.FirstName;
+        existingItem.SecondName = updateItem.SecondName;
+        existingItem.IdentityCode = updateItem.IdentityCode;
+
+        await repository.UpdateUserAsync(existingItem);
+        return NoContent();
+    }
 
     #endregion
     
