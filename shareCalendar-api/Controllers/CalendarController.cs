@@ -9,10 +9,12 @@ namespace shareCalendar_api.Controllers;
 public class CalendarController : ControllerBase
 {
     private readonly ICalendarRepository repository;
+    private readonly IBlankCalendarRepository blankCalendarRepository;
 
-    public CalendarController(ICalendarRepository repository)
+    public CalendarController(ICalendarRepository repository, IBlankCalendarRepository blankCalendarRepository)
     {
         this.repository = repository;
+        this.blankCalendarRepository = blankCalendarRepository;
     }
 
     #region endpoints
@@ -45,6 +47,22 @@ public class CalendarController : ControllerBase
             IsShared = calendarItem.IsShared,
             userId = userId
         };
+
+        if (calendarItem.IsShared)
+        {
+            CalendarItemBlank newCalendarItemBlank = new()
+            {
+                Id = Guid.NewGuid(),
+                userId = userId,
+                EndsAt = calendarItem.EndsAt,
+                CreatedOn = DateTimeOffset.Now,
+                IsShared = true,
+                StartsAt = calendarItem.StartsAt,
+                Blank = true,
+            };
+
+            await blankCalendarRepository.PostBlankCalendarItem(newCalendarItemBlank);
+        }
 
         await repository.CreateCalendarAsync(newCalendar);
 

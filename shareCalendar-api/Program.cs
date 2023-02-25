@@ -43,6 +43,7 @@ builder.Services.AddControllers(options =>
 
 builder.Services.AddSingleton<IUserRepository, UserRepositoryImpl>();
 builder.Services.AddSingleton<ICalendarRepository, CalendarRepositoryImpl>();
+builder.Services.AddSingleton<IBlankCalendarRepository, BlankCalendarRepositoryImpl>();
 
 
 BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
