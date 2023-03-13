@@ -40,6 +40,21 @@ builder.Services.AddControllers(options =>
     options.SuppressAsyncSuffixInActionNames = false;
 });
 
+// CORS
+builder.Services.AddCors(options =>
+    {
+        options.AddPolicy(name: MyAllowSpecificOrigins,
+            builder =>
+            {
+                builder.WithOrigins("*");
+                builder.AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials()
+                    .AllowAnyOrigin();
+
+            });
+    });
+
 
 builder.Services.AddSingleton<IUserRepository, UserRepositoryImpl>();
 builder.Services.AddSingleton<ICalendarRepository, CalendarRepositoryImpl>();
@@ -68,6 +83,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers().WithOpenApi();
+
+app.UseCors(MyAllowSpecificOrigins);
 
 // app.UseEndpoints(endpoints =>
 // {
