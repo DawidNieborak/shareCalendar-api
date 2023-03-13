@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
 using shareCalendar_api.Entities;
 using shareCalendar_api.Repositories;
 
@@ -6,6 +7,7 @@ namespace shareCalendar_api.Controllers;
 
 [ApiController]
 [Route("/api/v1/calendar")]
+[EnableCors("_myAllowSpecificOrigins")]
 public class CalendarController : ControllerBase
 {
     private readonly ICalendarRepository repository;

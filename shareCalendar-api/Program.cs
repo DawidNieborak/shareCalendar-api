@@ -29,7 +29,7 @@ builder.Services.AddCors(options =>
         options.AddPolicy(name: MyAllowSpecificOrigins,
             builder =>
             {
-                builder.AllowAnyOrigin()
+                builder.WithOrigins("http://localhost:3000", "http://localhost:4200", "https://vercel.shareCalendarApp.com")
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials();
