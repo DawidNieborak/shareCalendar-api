@@ -23,37 +23,23 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddHealthChecks();
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(name: MyAllowSpecificOrigins,
-        builder =>
-        {
-            builder.WithOrigins("*");
-            builder.AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials();
-        });
-});
-
-builder.Services.AddControllers(options =>
-{
-    options.SuppressAsyncSuffixInActionNames = false;
-});
-
 // CORS
 builder.Services.AddCors(options =>
     {
         options.AddPolicy(name: MyAllowSpecificOrigins,
             builder =>
             {
-                builder.WithOrigins("*");
-                builder.AllowAnyHeader()
+                builder.AllowAnyOrigin()
+                    .AllowAnyHeader()
                     .AllowAnyMethod()
-                    .AllowCredentials()
-                    .AllowAnyOrigin();
-
+                    .AllowCredentials();
             });
     });
+
+builder.Services.AddControllers(options =>
+{
+    options.SuppressAsyncSuffixInActionNames = false;
+});
 
 
 builder.Services.AddSingleton<IUserRepository, UserRepositoryImpl>();
